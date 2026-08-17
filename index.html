@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrutineering & Safety Gear Log</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --accent-color: #38bdf8;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-offline {
+            background-color: #334155;
+            color: var(--accent-color);
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .vehicle-info {
+            background-color: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        input, select {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background-color: var(--card-bg);
+            padding: 12px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-card .number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .summary-card.pass .number { color: var(--success-color); }
+        .summary-card.warn .number { color: var(--warning-color); }
+        .summary-card.fail .number { color: var(--danger-color); }
+
+        .summary-card .label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            margin: 20px 0 10px 0;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--text-muted);
+        }
+
+        .item-card.status-ok { border-left-color: var(--success-color); }
+        .item-card.status-warn { border-left-color: var(--warning-color); }
+        .item-card.status-fail { border-left-color: var(--danger-color); }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .item-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-ok .status-badge { background: rgba(34, 197, 94, 0.2); color: var(--success-color); }
+        .status-warn .status-badge { background: rgba(245, 158, 11, 0.2); color: var(--warning-color); }
+        .status-fail .status-badge { background: rgba(239, 68, 68, 0.2); color: var(--danger-color); }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .actions-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 480px) {
+            .item-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🛡️ Scrutineering Log <span class="badge-offline">OFFLINE</span></h1>
+    </header>
+
+    <div class="vehicle-info">
+        <div class="field-group">
+            <label for="car-num">Car #</label>
+            <input type="text" id="car-num" placeholder="e.g. 107">
+        </div>
+        <div class="field-group">
+            <label for="event-date">Inspection Date</label>
+            <input type="date" id="event-date">
+        </div>
+        <div class="field-group">
+            <label for="class-input">Class</label>
+            <input type="text" id="class-input" placeholder="e.g. Class 2 / B13 / Rally2">
+        </div>
+    </div>
+
+    <div class="summary-bar">
+        <div class="summary-card pass">
+            <div class="number" id="count-pass">0</div>
+            <div class="label">Passed</div>
+        </div>
+        <div class="summary-card warn">
+            <div class="number" id="count-warn">0</div>
+            <div class="label">Warning</div>
+        </div>
+        <div class="summary-card fail">
+            <div class="number" id="count-fail">0</div>
+            <div class="label">Failed</div>
+        </div>
+    </div>
+
+    <!-- SAFETY GEAR SECTION -->
+    <div class="section-title">
+        <span>Personal Safety Gear</span>
+        <button class="btn btn-secondary" style="width:auto; padding: 4px 8px; font-size: 0.75rem;" onclick="addGearItem()">+ Add Item</button>
+    </div>
+    <div class="item-list" id="gear-list"></div>
+
+    <!-- VEHICLE COMPLIANCE SECTION -->
+    <div class="section-title">Vehicle Compliance Items</div>
+    <div class="item-list" id="vehicle-list"></div>
+
+    <div class="actions-bar">
+        <button class="btn btn-secondary" onclick="resetForm()">Reset Checklist</button>
+        <button class="btn" onclick="exportData()">Export Log</button>
+    </div>
+
+    <script>
+        const defaultGear = [
+            { id: 'g1', name: 'Driver Helmet', std: 'FIA 8859-2015 / 8860-2010', year: 2028, type: 'gear' },
+            { id: 'g2', name: 'Co-Driver Helmet', std: 'FIA 8859-2015', year: 2026, type: 'gear' },
+            { id: 'g3', name: 'Driver HANS Device', std: 'FIA 8858-2010', year: 2029, type: 'gear' },
+            { id: 'g4', name: 'Driver Overalls', std: 'FIA 8856-2018', year: 2026, type: 'gear' },
+            { id: 'g5', name: 'Co-Driver Overalls', std: 'FIA 8856-2000', year: 2024, type: 'gear' },
+            { id: 'g6', name: 'Driver Harness', std: 'FIA 8853-2016', year: 2026, type: 'gear' },
+            { id: 'g7', name: 'Co-Driver Harness', std: 'FIA 8853-2016', year: 2025, type: 'gear' }
+        ];
+
+        const defaultVehicle = [
+            { id: 'v1', name: 'Plumbed-in Extinguisher', detail: 'Pressure gauge green & valid service date', year: 2027, type: 'gear' },
+            { id: 'v2', name: 'Handheld Extinguisher', detail: 'Min 2kg powder / FX, securely mounted', year: 2026, type: 'gear' },
+            { id: 'v3', name: 'First Aid Kit & Warning Triangle', detail: 'Complete & accessible in cabin', checked: false, type: 'check' },
+            { id: 'v4', name: 'SOS/OK Board', detail: 'Present in door pocket / rear', checked: false, type: 'check' },
+            { id: 'v5', name: 'Master Cut-off Switch', detail: 'Internal & external triggers operational', checked: false, type: 'check' },
+            { id: 'v6', name: 'Tow Eyes (Front & Rear)', detail: 'Marked with yellow/red arrows', checked: false, type: 'check' }
+        ];
+
+        let state = { gear: defaultGear, vehicle: defaultVehicle };
+
+        try {
+            const saved = localStorage.getItem('scrutineering_log_v3');
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+        } catch(e) {
+            console.warn('LocalStorage unavailable, running in-memory.');
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('scrutineering_log_v3', JSON.stringify(state));
+            } catch(e) {}
+            updateSummary();
+        }
+
+        function getStatus(expiryYear) {
+            const currentYear = new Date().getFullYear();
+            if (!expiryYear || expiryYear < currentYear) return { code: 'fail', text: 'Expired' };
+            if (expiryYear === currentYear) return { code: 'warn', text: 'Expires This Year' };
+            return { code: 'ok', text: 'Valid' };
+        }
+
+        function renderList() {
+            const gearContainer = document.getElementById('gear-list');
+            const vehicleContainer = document.getElementById('vehicle-list');
+
+            gearContainer.innerHTML = '';
+            vehicleContainer.innerHTML = '';
+
+            state.gear.forEach(item => {
+                const status = getStatus(item.year);
+                gearContainer.appendChild(createItemCard(item, status));
+            });
+
+            state.vehicle.forEach(item => {
+                if (item.type === 'check') {
+                    vehicleContainer.appendChild(createCheckCard(item));
+                } else {
+                    const status = getStatus(item.year);
+                    vehicleContainer.appendChild(createItemCard(item, status));
+                }
+            });
+
+            updateSummary();
+        }
+
+        function createItemCard(item, status) {
+            const card = document.createElement('div');
+            card.className = `item-card status-${status.code}`;
+            card.innerHTML = `
+                <div class="item-header">
+                    <div>
+                        <div class="item-title">${item.name}</div>
+                        <div class="item-sub">${item.std || item.detail || ''}</div>
+                    </div>
+                    <span class="status-badge">${status.text}</span>
+                </div>
+                <div class="item-controls">
+                    <div class="field-group">
+                        <label>Not Valid After (End of Year)</label>
+                        <input type="number" value="${item.year || ''}" min="2020" max="2040" onchange="updateExpiry('${item.id}', this.value)">
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function createCheckCard(item) {
+            const card = document.createElement('div');
+            const statusClass = item.checked ? 'status-ok' : 'status-fail';
+            card.className = `item-card ${statusClass}`;
+            card.innerHTML = `
+                <div class="item-header">
+                    <div>
+                        <div class="item-title">${item.name}</div>
+                        <div class="item-sub">${item.detail}</div>
+                    </div>
+                    <span class="status-badge">${item.checked ? 'Passed' : 'Pending'}</span>
+                </div>
+                <label class="checkbox-group">
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheck('${item.id}', this.checked)">
+                    <span>Verified & Compliant</span>
+                </label>
+            `;
+            return card;
+        }
+
+        function updateExpiry(id, year) {
+            const yearNum = parseInt(year, 10);
+            let item = state.gear.find(i => i.id === id) || state.vehicle.find(i => i.id === id);
+            if (item) {
+                item.year = yearNum;
+                saveData();
+                renderList();
+            }
+        }
+
+        function toggleCheck(id, checked) {
+            let item = state.vehicle.find(i => i.id === id);
+            if (item) {
+                item.checked = checked;
+                saveData();
+                renderList();
+            }
+        }
+
+        function updateSummary() {
+            let pass = 0, warn = 0, fail = 0;
+
+            const checkItem = (item) => {
+                if (item.type === 'check') {
+                    if (item.checked) pass++;
+                    else fail++;
+                } else {
+                    const status = getStatus(item.year);
+                    if (status.code === 'ok') pass++;
+                    if (status.code === 'warn') warn++;
+                    if (status.code === 'fail') fail++;
+                }
+            };
+
+            state.gear.forEach(checkItem);
+            state.vehicle.forEach(checkItem);
+
+            document.getElementById('count-pass').innerText = pass;
+            document.getElementById('count-warn').innerText = warn;
+            document.getElementById('count-fail').innerText = fail;
+        }
+
+        function addGearItem() {
+            const name = prompt('Item Name (e.g., Co-Driver HANS):');
+            if (!name) return;
+            const year = prompt('Expiry Year (Not valid after end of):', new Date().getFullYear() + 5);
+            if (!year) return;
+
+            state.gear.push({
+                id: 'custom_' + Date.now(),
+                name: name,
+                std: 'Custom Entry',
+                year: parseInt(year, 10),
+                type: 'gear'
+            });
+
+            saveData();
+            renderList();
+        }
+
+        function resetForm() {
+            if (confirm('Reset checklist to defaults? All custom edits will be overwritten.')) {
+                document.getElementById('car-num').value = '';
+                document.getElementById('event-date').value = '';
+                document.getElementById('class-input').value = '';
+                state = { gear: JSON.parse(JSON.stringify(defaultGear)), vehicle: JSON.parse(JSON.stringify(defaultVehicle)) };
+                saveData();
+                renderList();
+            }
+        }
+
+        function exportData() {
+            const carNum = document.getElementById('car-num').value || 'Unassigned';
+            const date = document.getElementById('event-date').value || 'Undated';
+            const carClass = document.getElementById('class-input').value || 'Unspecified';
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ carNum, date, carClass, ...state }, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `scrutineering_car_${carNum}_${date}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        renderList();
+    </script>
+</body>
+</html>
